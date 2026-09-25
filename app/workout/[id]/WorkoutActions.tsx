@@ -1,21 +1,14 @@
 "use client";
 
 import { Iworkout } from "@/app/types/workout";
+import { useFitLog } from "@/app/context/FitLogContext";
 
 interface WorkoutActionsProps {
   workout: Iworkout;
 }
 
-export default function WorkoutActions({
-  workout,
-}: WorkoutActionsProps) {
-  const handleAddToPlan = () => {
-    console.log("Add to plan:", workout.id);
-  };
-
-  const handleSave = () => {
-    console.log("Save workout:", workout.id);
-  };
+export default function WorkoutActions({workout}: WorkoutActionsProps) {
+  const { addToPlan, saveWorkout } = useFitLog();
 
   return (
     <div className="flex flex-wrap items-center gap-3 pt-4">
@@ -23,7 +16,7 @@ export default function WorkoutActions({
       {/* Add to Plan */}
       <button
         type="button"
-        onClick={handleAddToPlan}
+        onClick={() => addToPlan(workout)}
         className="flex items-center gap-2 rounded-lg bg-[#c8ff00] px-5 py-3 text-xs font-black uppercase tracking-wider text-black transition-all hover:bg-[#b5e600] active:scale-95"
       >
         <svg
@@ -40,13 +33,13 @@ export default function WorkoutActions({
           />
         </svg>
 
-        <span>Add to today's plan</span>
+        <span>Add to today&apos;s plan</span>
       </button>
 
       {/* Save */}
       <button
         type="button"
-        onClick={handleSave}
+        onClick={() => saveWorkout(workout)}
         className="flex items-center gap-2 rounded-lg border border-white/20 bg-[#14181f] px-5 py-3 text-xs font-bold uppercase tracking-wider text-white transition-all hover:border-white/40 hover:bg-white/5 active:scale-95"
       >
         <svg
