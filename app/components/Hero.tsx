@@ -48,7 +48,7 @@ export default function Hero() {
 
             {/* Right Image */}
             <div className="flex justify-center lg:col-span-5 lg:justify-end">
-              <div className="relative h-64 w-full max-w-sm sm:h-80 lg:h-[340px]">
+              <div className="relative h-64 w-full max-w-sm sm:h-80 lg:h-85">
                 <Image
                   src="/banner.png"
                   alt="Fitness illustration"

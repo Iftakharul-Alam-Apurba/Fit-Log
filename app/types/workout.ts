@@ -1,4 +1,4 @@
-export type Workout = {
+export interface Iworkout {
   id: number;
   name: string;
   image: string;
@@ -12,4 +12,4 @@ export type Workout = {
   rating: number;
   description: string;
   instructions: string[];
-};
+}
