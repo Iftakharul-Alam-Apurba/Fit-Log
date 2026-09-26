@@ -2,6 +2,14 @@
 
 A modern, responsive workout library built with **Next.js** where users can explore exercises, create a daily workout plan, save workouts for later, and track completed exercises.
 
+## 🌐 Live Demo
+
+**[Visit FitLog](https://fit-log-flax.vercel.app/)**
+
+## 🎯 Project Purpose
+
+The purpose of **FitLog** is to provide a simple and focused workout management experience where users can discover exercises, organize their daily workouts, save exercises for future use, and track their progress. The project demonstrates how a modern Next.js application can combine API-based data, responsive UI, client-side state management, and persistent local storage into a practical fitness application.
+
 ## 🚀 Technologies Used
 
 * **Next.js 16** — React framework with App Router
@@ -99,9 +107,7 @@ Clone the repository and install the dependencies:
 
 ```bash
 git clone https://github.com/Iftakharul-Alam-Apurba/fit-log.git
-
 cd fit-log
-
 npm install
 ```
 
@@ -132,6 +138,3 @@ npm start
 **FitLog — Workout Library**
 
 Built as a frontend development project using Next.js, TypeScript, Tailwind CSS, and DaisyUI.
-
-```
-```
