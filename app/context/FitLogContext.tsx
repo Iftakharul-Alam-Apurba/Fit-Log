@@ -9,16 +9,24 @@ import { Iworkout } from "@/app/types/workout";
 interface FitLogContextType {
   plan: Iworkout[];
   saved: Iworkout[];
+  completed: number[];
   addToPlan: (workout: Iworkout) => void;
   removeFromPlan: (id: number) => void;
+  removeFromSaved: (id: number) => void;
+  markAsDone: (id: number) => void;
   saveWorkout: (workout: Iworkout) => void;
 }
 
 const FitLogContext = createContext<FitLogContextType | undefined>(undefined);
 
-export const FitLogProvider = ({children}: {children: React.ReactNode;}) => {
+export const FitLogProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   const [plan, setPlan] = useState<Iworkout[]>([]);
   const [saved, setSaved] = useState<Iworkout[]>([]);
+  const [completed, setCompleted] = useState<number[]>([]);
 
   const addToPlan = (workout: Iworkout) => {
     if (plan.length >= 5) {
@@ -50,6 +58,30 @@ export const FitLogProvider = ({children}: {children: React.ReactNode;}) => {
     toast.success("Workout removed from your plan.");
   };
 
+  const removeFromSaved = (id: number) => {
+    const exists = saved.some((workout) => workout.id === id);
+
+    if (!exists) {
+      return;
+    }
+
+    setSaved((currentSaved) =>
+      currentSaved.filter((workout) => workout.id !== id)
+    );
+
+    toast.success("Workout removed from saved.");
+  };
+
+  const markAsDone = (id: number) => {
+    if (completed.includes(id)) {
+      return;
+    }
+
+    setCompleted((currentCompleted) => [...currentCompleted, id]);
+
+    toast.success("Workout marked as done!");
+  };
+
   const saveWorkout = (workout: Iworkout) => {
     if (saved.some((item) => item.id === workout.id)) {
       toast.info("Workout is already saved.");
@@ -66,8 +98,11 @@ export const FitLogProvider = ({children}: {children: React.ReactNode;}) => {
       value={{
         plan,
         saved,
+        completed,
         addToPlan,
         removeFromPlan,
+        removeFromSaved,
+        markAsDone,
         saveWorkout,
       }}
     >
