@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -24,9 +24,53 @@ export const FitLogProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [plan, setPlan] = useState<Iworkout[]>([]);
-  const [saved, setSaved] = useState<Iworkout[]>([]);
-  const [completed, setCompleted] = useState<number[]>([]);
+  const [plan, setPlan] = useState<Iworkout[]>(() => {
+    if (typeof window === "undefined") {
+      return [];
+    }
+
+    const storedPlan = localStorage.getItem("fitlog-plan");
+
+    return storedPlan ? JSON.parse(storedPlan) : [];
+  });
+
+  const [saved, setSaved] = useState<Iworkout[]>(() => {
+    if (typeof window === "undefined") {
+      return [];
+    }
+
+    const storedSaved = localStorage.getItem("fitlog-saved");
+
+    return storedSaved ? JSON.parse(storedSaved) : [];
+  });
+
+  const [completed, setCompleted] = useState<number[]>(() => {
+    if (typeof window === "undefined") {
+      return [];
+    }
+
+    const storedCompleted = localStorage.getItem("fitlog-completed");
+
+    return storedCompleted ? JSON.parse(storedCompleted) : [];
+  });
+
+  // Save plan to localStorage
+  useEffect(() => {
+    localStorage.setItem("fitlog-plan", JSON.stringify(plan));
+  }, [plan]);
+
+  // Save saved workouts to localStorage
+  useEffect(() => {
+    localStorage.setItem("fitlog-saved", JSON.stringify(saved));
+  }, [saved]);
+
+  // Save completed workouts to localStorage
+  useEffect(() => {
+    localStorage.setItem(
+      "fitlog-completed",
+      JSON.stringify(completed)
+    );
+  }, [completed]);
 
   const addToPlan = (workout: Iworkout) => {
     if (plan.length >= 5) {
