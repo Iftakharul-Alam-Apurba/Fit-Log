@@ -10,7 +10,7 @@ type NavLinksProps = {
 export default function NavLinks({ className = '' }: NavLinksProps) {
   const pathname = usePathname();
 
-  const isWorkoutPage = pathname === '/';
+  const isWorkoutPage = pathname === "/" || pathname.startsWith("/workout");
   const isPlanPage = pathname === '/my-plan';
 
   return (

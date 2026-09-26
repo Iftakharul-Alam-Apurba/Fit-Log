@@ -1,15 +1,22 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useSyncExternalStore,
+} from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import { Iworkout } from "@/app/types/workout";
 
-interface FitLogContextType {
+interface FitLogState {
   plan: Iworkout[];
   saved: Iworkout[];
   completed: number[];
+}
+
+interface FitLogContextType extends FitLogState {
   addToPlan: (workout: Iworkout) => void;
   removeFromPlan: (id: number) => void;
   removeFromSaved: (id: number) => void;
@@ -17,122 +24,134 @@ interface FitLogContextType {
   saveWorkout: (workout: Iworkout) => void;
 }
 
-const FitLogContext = createContext<FitLogContextType | undefined>(undefined);
+const STORAGE_KEY = "fitlog-data";
+
+const emptyState: FitLogState = {
+  plan: [],
+  saved: [],
+  completed: [],
+};
+
+let state: FitLogState = emptyState;
+
+const listeners = new Set<() => void>();
+
+const getSnapshot = () => state;
+
+const getServerSnapshot = () => emptyState;
+
+const subscribe = (listener: () => void) => {
+  listeners.add(listener);
+
+  return () => {
+    listeners.delete(listener);
+  };
+};
+
+// Load saved data from localStorage
+if (typeof window !== "undefined") {
+  try {
+    const storedData = localStorage.getItem(STORAGE_KEY);
+
+    if (storedData) {
+      state = JSON.parse(storedData);
+    }
+  } catch {
+    state = emptyState;
+  }
+}
+
+const updateState = (newState: FitLogState) => {
+  state = newState;
+
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+
+  listeners.forEach((listener) => listener());
+};
+
+const FitLogContext = createContext<FitLogContextType | undefined>(
+  undefined
+);
 
 export const FitLogProvider = ({
   children,
 }: {
   children: React.ReactNode;
 }) => {
-  const [plan, setPlan] = useState<Iworkout[]>(() => {
-    if (typeof window === "undefined") {
-      return [];
-    }
-
-    const storedPlan = localStorage.getItem("fitlog-plan");
-
-    return storedPlan ? JSON.parse(storedPlan) : [];
-  });
-
-  const [saved, setSaved] = useState<Iworkout[]>(() => {
-    if (typeof window === "undefined") {
-      return [];
-    }
-
-    const storedSaved = localStorage.getItem("fitlog-saved");
-
-    return storedSaved ? JSON.parse(storedSaved) : [];
-  });
-
-  const [completed, setCompleted] = useState<number[]>(() => {
-    if (typeof window === "undefined") {
-      return [];
-    }
-
-    const storedCompleted = localStorage.getItem("fitlog-completed");
-
-    return storedCompleted ? JSON.parse(storedCompleted) : [];
-  });
-
-  // Save plan to localStorage
-  useEffect(() => {
-    localStorage.setItem("fitlog-plan", JSON.stringify(plan));
-  }, [plan]);
-
-  // Save saved workouts to localStorage
-  useEffect(() => {
-    localStorage.setItem("fitlog-saved", JSON.stringify(saved));
-  }, [saved]);
-
-  // Save completed workouts to localStorage
-  useEffect(() => {
-    localStorage.setItem(
-      "fitlog-completed",
-      JSON.stringify(completed)
-    );
-  }, [completed]);
+  const currentState = useSyncExternalStore(
+    subscribe,
+    getSnapshot,
+    getServerSnapshot
+  );
 
   const addToPlan = (workout: Iworkout) => {
-    if (plan.length >= 5) {
+    if (state.plan.length >= 5) {
       toast.error("Your plan is full. Maximum 5 workouts.");
       return;
     }
 
-    if (plan.some((item) => item.id === workout.id)) {
+    if (state.plan.some((item) => item.id === workout.id)) {
       toast.info("Workout is already in your plan.");
       return;
     }
 
-    setPlan((currentPlan) => [...currentPlan, workout]);
+    updateState({
+      ...state,
+      plan: [...state.plan, workout],
+    });
 
     toast.success("Workout added to your plan!");
   };
 
   const removeFromPlan = (id: number) => {
-    const exists = plan.some((workout) => workout.id === id);
-
-    if (!exists) {
+    if (!state.plan.some((workout) => workout.id === id)) {
       return;
     }
 
-    setPlan((currentPlan) =>
-      currentPlan.filter((workout) => workout.id !== id)
-    );
+    updateState({
+      ...state,
+      plan: state.plan.filter((workout) => workout.id !== id),
+    });
 
     toast.success("Workout removed from your plan.");
   };
 
   const removeFromSaved = (id: number) => {
-    const exists = saved.some((workout) => workout.id === id);
-
-    if (!exists) {
+    if (!state.saved.some((workout) => workout.id === id)) {
       return;
     }
 
-    setSaved((currentSaved) =>
-      currentSaved.filter((workout) => workout.id !== id)
-    );
+    updateState({
+      ...state,
+      saved: state.saved.filter((workout) => workout.id !== id),
+    });
 
     toast.success("Workout removed from saved.");
   };
 
   const markAsDone = (id: number) => {
-    if (completed.includes(id)) {
+    if (state.completed.includes(id)) {
       return;
     }
 
-    setCompleted((currentCompleted) => [...currentCompleted, id]);
+    updateState({
+      ...state,
+      completed: [...state.completed, id],
+    });
 
     toast.success("Workout marked as done!");
   };
 
   const saveWorkout = (workout: Iworkout) => {
-    if (saved.some((item) => item.id === workout.id)) {
+    if (state.saved.some((item) => item.id === workout.id)) {
       toast.info("Workout is already saved.");
       return;
     }
 
-    setSaved((currentSaved) => [...currentSaved, workout]);
+    updateState({
+      ...state,
+      saved: [...state.saved, workout],
+    });
 
     toast.success("Workout saved for later!");
   };
@@ -140,9 +159,7 @@ export const FitLogProvider = ({
   return (
     <FitLogContext.Provider
       value={{
-        plan,
-        saved,
-        completed,
+        ...currentState,
         addToPlan,
         removeFromPlan,
         removeFromSaved,
@@ -165,7 +182,9 @@ export const useFitLog = () => {
   const context = useContext(FitLogContext);
 
   if (!context) {
-    throw new Error("useFitLog must be used inside FitLogProvider");
+    throw new Error(
+      "useFitLog must be used inside FitLogProvider"
+    );
   }
 
   return context;

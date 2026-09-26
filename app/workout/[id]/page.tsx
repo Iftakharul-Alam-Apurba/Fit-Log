@@ -8,22 +8,26 @@ interface PageProps {
   params: Promise<{
     id: string;
   }>;
-} 
-
-async function getWorkoutDetails(id: string): Promise<Iworkout | null> {
-  
-    const res = await fetch(`https://api.abcz.workers.dev/api/fitlog/${id}`, {
-      next: { revalidate: 3600 },
-    });
-
-     if (!res.ok) {
-       throw new Error("Failed to fetch workout details");
-  }
-
-    return await res.json();
 }
 
-export default async function WorkoutDetailsPage({params}: PageProps) {
+async function getWorkoutDetails(id: string): Promise<Iworkout | null> {
+  const res = await fetch(
+    `https://api.abcz.workers.dev/api/fitlog/${id}`,
+    {
+      next: { revalidate: 3600 },
+    }
+  );
+
+  if (!res.ok) {
+    return null;
+  }
+
+  return await res.json();
+}
+
+export default async function WorkoutDetailsPage({
+  params,
+}: PageProps) {
   const { id } = await params;
 
   const workout = await getWorkoutDetails(id);
@@ -33,12 +37,10 @@ export default async function WorkoutDetailsPage({params}: PageProps) {
   }
 
   return (
-    <main className="w-full py-8 sm:py-12">
+    <div className="w-full py-8 sm:py-12">
       <div className="container mx-auto px-4 sm:px-8">
-
         {/* Main Details */}
         <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12 lg:gap-12">
-
           {/* Image */}
           <div className="lg:col-span-5">
             <div className="relative aspect-square w-full overflow-hidden rounded-3xl border border-white/10 bg-[#14181f] shadow-2xl">
@@ -54,7 +56,6 @@ export default async function WorkoutDetailsPage({params}: PageProps) {
 
           {/* Details */}
           <div className="space-y-6 lg:col-span-7">
-
             {/* Title + Description */}
             <div className="space-y-3">
               <h1 className="text-3xl font-black uppercase tracking-tight text-white sm:text-4xl lg:text-5xl">
@@ -81,11 +82,11 @@ export default async function WorkoutDetailsPage({params}: PageProps) {
             {/* Specifications */}
             <div className="overflow-hidden rounded-2xl border border-white/5 bg-[#14181f] p-4 sm:p-5">
               <div className="divide-y divide-white/5 text-xs font-semibold">
-
                 <div className="flex justify-between py-2.5">
                   <span className="uppercase tracking-wider text-gray-400">
                     Equipment
                   </span>
+
                   <span className="text-white">
                     {workout.equipment}
                   </span>
@@ -95,6 +96,7 @@ export default async function WorkoutDetailsPage({params}: PageProps) {
                   <span className="uppercase tracking-wider text-gray-400">
                     Difficulty
                   </span>
+
                   <span className="text-white">
                     {workout.difficulty}
                   </span>
@@ -104,6 +106,7 @@ export default async function WorkoutDetailsPage({params}: PageProps) {
                   <span className="uppercase tracking-wider text-gray-400">
                     Sets
                   </span>
+
                   <span className="text-white">
                     {workout.sets}
                   </span>
@@ -113,6 +116,7 @@ export default async function WorkoutDetailsPage({params}: PageProps) {
                   <span className="uppercase tracking-wider text-gray-400">
                     Reps
                   </span>
+
                   <span className="text-white">
                     {workout.reps}
                   </span>
@@ -122,6 +126,7 @@ export default async function WorkoutDetailsPage({params}: PageProps) {
                   <span className="uppercase tracking-wider text-gray-400">
                     Duration
                   </span>
+
                   <span className="text-white">
                     {workout.duration} min
                   </span>
@@ -131,6 +136,7 @@ export default async function WorkoutDetailsPage({params}: PageProps) {
                   <span className="uppercase tracking-wider text-gray-400">
                     Calories
                   </span>
+
                   <span className="text-white">
                     {workout.caloriesBurned} kcal
                   </span>
@@ -140,11 +146,11 @@ export default async function WorkoutDetailsPage({params}: PageProps) {
                   <span className="uppercase tracking-wider text-gray-400">
                     Rating
                   </span>
+
                   <span className="text-[#c8ff00]">
                     ★ {workout.rating}
                   </span>
                 </div>
-
               </div>
             </div>
 
@@ -172,10 +178,9 @@ export default async function WorkoutDetailsPage({params}: PageProps) {
 
             {/* Interactive Actions */}
             <WorkoutActions workout={workout} />
-
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 }

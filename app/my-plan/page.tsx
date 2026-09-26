@@ -2,10 +2,8 @@ import PlanContent from "./components/PlanContent";
 
 export default function MyPlanPage() {
   return (
-    <main className="w-full py-8 sm:py-12">
+    <section className="w-full py-8 sm:py-12">
       <div className="container mx-auto px-4 sm:px-8">
-
-        {/* Header */}
         <div className="mb-8 space-y-2">
           <h1 className="text-3xl font-black uppercase tracking-tight text-white sm:text-4xl">
             MY PLAN
@@ -19,6 +17,6 @@ export default function MyPlanPage() {
         <PlanContent />
 
       </div>
-    </main>
+    </section>
   );
 }

@@ -7,10 +7,7 @@ import NavBadges from './NavBadges';
 export default function Nav() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-[#0e1015]/95 text-white backdrop-blur-md">
-      {/* Desktop Navbar */}
       <div className="container relative mx-auto flex h-16 items-center justify-between px-4 sm:px-8">
-        
-        {/* Logo */}
         <Link
           href="/"
           className="flex items-center text-lg font-black uppercase tracking-wider text-white transition-opacity hover:opacity-80"
@@ -26,14 +23,11 @@ export default function Nav() {
           <span>FITLOG</span>
         </Link>
 
-        {/* Desktop Navigation */}
         <NavLinks className="hidden md:absolute md:left-1/2 md:flex md:-translate-x-1/2" />
 
-        {/* Plan / Saved Badges */}
         <NavBadges />
       </div>
 
-      {/* Mobile Navigation */}
       <div className="border-t border-white/5 px-4 py-2 md:hidden">
         <div className="container mx-auto">
           <NavLinks className="flex w-full" />

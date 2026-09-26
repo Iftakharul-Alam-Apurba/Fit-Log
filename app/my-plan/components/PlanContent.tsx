@@ -44,7 +44,6 @@ export default function PlanContent() {
 
   return (
     <div className="space-y-8">
-      {/* Metrics */}
       <div className="grid grid-cols-3 gap-3">
         <div className="rounded-2xl border border-white/10 bg-[#14181f] p-4">
           <p className="text-[10px] font-bold uppercase tracking-widest text-gray-500">
@@ -76,8 +75,6 @@ export default function PlanContent() {
           </p>
         </div>
       </div>
-
-      {/* Tabs + Sort */}
       <div className="flex flex-col justify-between gap-3 border-b border-white/10 sm:flex-row sm:items-center">
         <div className="flex items-center gap-2">
           <button
@@ -104,8 +101,6 @@ export default function PlanContent() {
             Saved
           </button>
         </div>
-
-        {/* Sort */}
         <div className="flex items-center gap-2 pb-2 sm:pb-0">
           <label
             htmlFor="sort-workouts"
@@ -126,8 +121,6 @@ export default function PlanContent() {
           </select>
         </div>
       </div>
-
-      {/* Content */}
       {sortedWorkouts.length === 0 ? (
         <div className="flex min-h-80 flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 bg-[#111419] px-6 text-center">
           <h2 className="text-xl font-black uppercase tracking-tight text-white">
